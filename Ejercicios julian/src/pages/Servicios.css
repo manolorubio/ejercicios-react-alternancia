@@ -1,0 +1,22 @@
+/* Servicios.css */
+
+.servicios-page {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+.servicios-header {
+  text-align: center;
+}
+
+.feature-header {
+  margin-bottom: 32px;
+}
+
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-border), transparent);
+  margin: 0 auto;
+  width: 80%;
+}

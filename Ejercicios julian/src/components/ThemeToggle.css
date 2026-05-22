@@ -1,0 +1,53 @@
+/* ThemeToggle.css — Botón flotante de alternancia de tema */
+
+.theme-toggle {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 999;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 99px;
+}
+
+.theme-toggle-track {
+  display: flex;
+  align-items: center;
+  width: 56px;
+  height: 30px;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
+  border-radius: 99px;
+  padding: 3px;
+  box-shadow: 0 4px 16px rgba(99,102,241,0.4);
+  transition: var(--transition);
+  position: relative;
+}
+
+.theme-toggle:hover .theme-toggle-track {
+  box-shadow: 0 6px 24px rgba(99,102,241,0.55);
+  transform: scale(1.05);
+}
+
+.theme-toggle-thumb {
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+[data-theme="dark"] .theme-toggle-thumb {
+  transform: translateX(26px);
+}
+
+.theme-icon {
+  font-size: 0.85rem;
+  line-height: 1;
+  display: block;
+}

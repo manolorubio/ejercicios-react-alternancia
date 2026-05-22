@@ -1,0 +1,121 @@
+/* Contacto.css */
+
+.contacto-page {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.contacto-header {
+  text-align: center;
+}
+
+.contacto-layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* Info card */
+.contacto-info-card {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
+  border: none;
+  color: white;
+  position: sticky;
+  top: 90px;
+}
+
+.info-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+}
+
+.info-subtitle {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.55;
+}
+
+.info-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.info-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.info-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 2px;
+}
+
+.info-value {
+  display: block;
+  font-size: 0.9rem;
+  color: white;
+  font-weight: 500;
+}
+
+.social-links {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  transition: var(--transition);
+  text-decoration: none;
+}
+
+.social-btn:hover {
+  background: rgba(255,255,255,0.35);
+  transform: translateY(-2px);
+}
+
+/* Form wrapper */
+.contacto-form-wrapper {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 36px;
+  box-shadow: var(--card-shadow);
+}
+
+@media (max-width: 900px) {
+  .contacto-layout {
+    grid-template-columns: 1fr;
+  }
+  .contacto-info-card {
+    position: static;
+  }
+}

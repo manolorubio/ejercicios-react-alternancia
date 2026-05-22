@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gestión de Pedidos – Empresa de Reparto</title>
+
+  <!-- Bootstrap 4 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Lodash (orden 1) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+  <!-- jQuery (orden 2) -->
+  <script defer src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <!-- Bootstrap 4 JS bundle (orden 3) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <style>
+    body { padding-top:20px; background:#f8f9fa; }
+    h1,h2 { font-weight:700; }
+    .list-group-item { display:flex; justify-content:space-between; align-items:center; }
+    .btn-sm { margin-left:5px; }
+    .form-section { background:#fff; padding:15px; margin-bottom:20px; border-radius:6px; box-shadow:0 0 5px rgba(0,0,0,.1); }
+    .table thead th { background:#007bff; color:#fff; }
+    .feedback { color:red; font-size:.9em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="my-4 text-center text-primary">Gestión de Pedidos – Empresa de Reparto</h1>
+    <div class="row">
+      <section class="col-md-4">
+        <h2 class="mb-3">Pedidos</h2>
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr><th>ID</th><th>Cliente</th><th>Zona</th><th>Total</th></tr>
+          </thead>
+          <tbody id="pedidosTableBody"></tbody>
+        </table>
+      </section>
+
+      <section class="col-md-4">
+        <h2 class="mb-3">Productos (Funkopops)</h2>
+        <ul id="productosList" class="list-group mb-4"></ul>
+
+        <div class="form-section">
+          <h5>Selección de Productos para Pedido</h5>
+          <form id="pedidoProductoForm" novalidate>
+            <div class="form-group">
+              <label for="clienteInput">Nombre del Cliente</label>
+              <input type="text" id="clienteInput" class="form-control" required />
+              <div class="invalid-feedback">El nombre del cliente es obligatorio.</div>
+            </div>
+            <div class="form-group">
+              <label for="zonaSelect">Zona de Reparto</label>
+              <select id="zonaSelect" class="form-control" required>
+                <option value="" disabled selected>-- Selecciona una zona --</option>
+              </select>
+              <div class="invalid-feedback">Selecciona una zona de reparto.</div>
+            </div>
+            <div class="form-group">
+              <label for="productoSelect">Selecciona un producto</label>
+              <select id="productoSelect" class="form-control" required>
+                <option value="" disabled selected>-- Elige un producto --</option>
+              </select>
+              <div class="invalid-feedback">Selecciona un producto.</div>
+            </div>
+            <div class="form-group">
+              <label for="productoCantidadInput">Cantidad</label>
+              <input type="number" id="productoCantidadInput" class="form-control" min="1" value="1" required />
+              <div class="invalid-feedback">Introduce una cantidad válida.</div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Añadir al Pedido</button>
+            <div id="feedbackMessage" class="feedback"></div>
+          </form>
+        </div>
+
+        <div>
+          <h5>Productos seleccionados para nuevo pedido</h5>
+          <ul id="productosSeleccionados" class="list-group mb-3"></ul>
+          <p><strong>Total del pedido:</strong> <span id="totalPedido">0.00 €</span></p>
+          <button id="finalizarPedidoBtn" class="btn btn-success btn-block" disabled>Finalizar Pedido</button>
+        </div>
+      </section>
+
+      <section class="col-md-4">
+        <h2 class="mb-3">Zonas y Tarifas</h2>
+
+        <div class="form-section">
+          <h5>Añadir zona</h5>
+          <form id="zonaForm" novalidate>
+            <div class="form-group">
+              <label for="zonaNombreInput">Nombre de la Zona</label>
+              <input type="text" id="zonaNombreInput" class="form-control" required />
+              <div class="invalid-feedback">Nombre es obligatorio.</div>
+            </div>
+            <div class="form-group">
+              <label for="zonaTarifaInput">Tarifa (€)</label>
+              <input type="number" id="zonaTarifaInput" class="form-control" min="0" step="0.01" required />
+              <div class="invalid-feedback">Tarifa válida requerida.</div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Añadir Zona</button>
+          </form>
+        </div>
+
+        <ul id="zonasList" class="list-group"></ul>
+
+        <div class="mt-4">
+          <h5>Zona más activa</h5>
+          <p id="zonaMasActivaText" class="font-weight-bold"></p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script defer>
+    window.addEventListener('DOMContentLoaded', () => {
+      const pedidos = [];
+
+      const zonas = [
+        { nombre:"Zona A", tarifa:4.5, pedidos:[10,12,8,15,9,11,14] },
+        { nombre:"Zona B", tarifa:3.0, pedidos:[5,6,7,4,5,6,5] },
+        { nombre:"Zona C", tarifa:5.0, pedidos:[20,22,19,21,18,20,23] }
+      ];
+
+      const productos = [
+        { id:"FP001", nombre:"Funko Pop Spiderman",        precio:30, stock:100 },
+        { id:"FP002", nombre:"Funko Pop LeBron James",     precio:30, stock:80  },
+        { id:"FP003", nombre:"Funko Pop Cristiano Ronaldo",precio:30, stock:90  },
+        { id:"FP004", nombre:"Funko Pop Lionel Messi",     precio:30, stock:75  }
+      ];
+
+      const tbodyPedidos           = document.getElementById('pedidosTableBody');
+      const zonaSelect             = document.getElementById('zonaSelect');
+      const productoSelect         = document.getElementById('productoSelect');
+      const productosList          = document.getElementById('productosList');
+      const pedidoProductoForm     = document.getElementById('pedidoProductoForm');
+      const cantidadInput          = document.getElementById('productoCantidadInput');
+      const feedbackMessage        = document.getElementById('feedbackMessage');
+      const productosSelList       = document.getElementById('productosSeleccionados');
+      const totalPedidoSpan        = document.getElementById('totalPedido');
+      const finalizarPedidoBtn     = document.getElementById('finalizarPedidoBtn');
+      const zonaForm               = document.getElementById('zonaForm');
+      const zonaNombreInput        = document.getElementById('zonaNombreInput');
+      const zonaTarifaInput        = document.getElementById('zonaTarifaInput');
+      const zonasList              = document.getElementById('zonasList');
+      const zonaMasActivaText      = document.getElementById('zonaMasActivaText');
+      const clienteInput           = document.getElementById('clienteInput');
+
+      const productosSeleccionados = [];
+
+      const calcularMediaPedidos = () => zonas.map(z => ({ ...z, media: z.pedidos.reduce((a,b)=>a+b,0)/z.pedidos.length }));
+      const zonaMasActiva = () => _.maxBy(calcularMediaPedidos(), 'media');
+
+      function mostrarPedidos() {
+        tbodyPedidos.innerHTML = '';
+        pedidos.forEach(p => {
+          tbodyPedidos.insertAdjacentHTML('beforeend', `
+            <tr><td>${p.id}</td><td>${p.cliente}</td><td>${p.zona}</td><td>${p.total.toFixed(2)} €</td></tr>
+          `);
+        });
+      }
+
+      function mostrarZonas() {
+        zonasList.innerHTML = '';
+        zonaSelect.innerHTML = '<option value="" disabled selected>-- Selecciona una zona --</option>';
+        zonas.forEach((zona, idx) => {
+          zonasList.insertAdjacentHTML('beforeend', `
+            <li class="list-group-item">
+              <div><strong>${zona.nombre}</strong> – Tarifa: ${zona.tarifa.toFixed(2)} €<br>Pedidos semana: ${zona.pedidos.join(', ')}</div>
+              <button class="btn btn-sm btn-danger" onclick="eliminarZona(${idx})">&times;</button>
+            </li>
+          `);
+          zonaSelect.insertAdjacentHTML('beforeend', `<option value="${zona.nombre}">${zona.nombre} – €${zona.tarifa}</option>`);
+        });
+        const activa = zonaMasActiva();
+        zonaMasActivaText.textContent = activa ? `${activa.nombre} (media ${activa.media.toFixed(2)} ped/día)` : '—';
+      }
+
+      function mostrarProductos() {
+        productosList.innerHTML = '';
+        productoSelect.innerHTML = '<option value="" disabled selected>-- Elige un producto --</option>';
+        productos.forEach(p => {
+          productosList.insertAdjacentHTML('beforeend', `<li class="list-group-item">${p.nombre} – €${p.precio.toFixed(2)} – Stock: ${p.stock}</li>`);
+          productoSelect.insertAdjacentHTML('beforeend', `<option value="${p.id}">${p.nombre} – €${p.precio.toFixed(2)} – Stock: ${p.stock}</option>`);
+        });
+      }
+
+      function mostrarProductosSeleccionados() {
+        productosSelList.innerHTML = '';
+        productosSeleccionados.forEach((item, idx) => {
+          productosSelList.insertAdjacentHTML('beforeend', `
+            <li class="list-group-item">
+              <span>${item.nombre} – Cant: ${item.cantidad} – Subtotal: €${(item.precio*item.cantidad).toFixed(2)}</span>
+              <button class="btn btn-sm btn-danger" onclick="quitarProductoSeleccionado(${idx})">&times;</button>
+            </li>
+          `);
+        });
+        const total = productosSeleccionados.reduce((s,i)=>s+i.precio*i.cantidad, 0);
+        totalPedidoSpan.textContent = total.toFixed(2)+' €';
+        finalizarPedidoBtn.disabled = productosSeleccionados.length===0 || clienteInput.value.trim()==='' || zonaSelect.value==='';
+      }
+
+      window.eliminarZona = idx => {
+        zonas.splice(idx,1);
+        mostrarZonas();
+      };
+
+      window.quitarProductoSeleccionado = idx => {
+        productosSeleccionados.splice(idx,1);
+        mostrarProductosSeleccionados();
+      };
+
+      pedidoProductoForm.addEventListener('submit', e => {
+        e.preventDefault();
+        if (!pedidoProductoForm.checkValidity()) {
+          pedidoProductoForm.classList.add('was-validated');
+          return;
+        }
+        const prodId   = productoSelect.value;
+        const cantidad = parseInt(cantidadInput.value,10);
+        const prod     = productos.find(p=>p.id===prodId);
+        if (!prod) return;
+
+        const existente = productosSeleccionados.find(i=>i.id===prodId);
+        const sumaCant  = (existente?existente.cantidad:0)+cantidad;
+        if (sumaCant>prod.stock) {
+          feedbackMessage.textContent = `Stock insuficiente. Disponible: ${prod.stock}`;
+          return;
+        }
+        feedbackMessage.textContent = '';
+        if (existente) existente.cantidad += cantidad;
+        else productosSeleccionados.push({id:prod.id, nombre:prod.nombre, precio:prod.precio, cantidad});
+
+        mostrarProductosSeleccionados();
+        pedidoProductoForm.classList.remove('was-validated');
+      });
+
+      finalizarPedidoBtn.addEventListener('click', () => {
+        if (!productosSeleccionados.length) return;
+        const cliente = clienteInput.value.trim();
+        const zona    = zonaSelect.value;
+        if (!cliente || !zona) return;
+        const nuevoId = pedidos.length ? pedidos[pedidos.length-1].id+1 : 1;
+        const total   = productosSeleccionados.reduce((s,i)=>s+i.precio*i.cantidad, 0);
+
+        pedidos.push({ id: nuevoId, cliente, zona, productos: productosSeleccionados.map(o=>({...o})), total });
+        productosSeleccionados.forEach(sel => {
+          const p = productos.find(pr=>pr.id===sel.id);
+          if (p) p.stock -= sel.cantidad;
+        });
+
+        productosSeleccionados.length = 0;
+        pedidoProductoForm.reset();
+        mostrarPedidos();
+        mostrarProductos();
+        mostrarProductosSeleccionados();
+      });
+
+      zonaForm.addEventListener('submit', e => {
+        e.preventDefault();
+        if (!zonaForm.checkValidity()) {
+          zonaForm.classList.add('was-validated');
+          return;
+        }
+        const nombre = zonaNombreInput.value.trim();
+        const tarifa = parseFloat(zonaTarifaInput.value);
+        const pedidosSemana = Array.from({length:7},()=>Math.floor(Math.random()*20));
+        zonas.push({nombre, tarifa, pedidos:pedidosSemana});
+        mostrarZonas();
+        zonaForm.reset();3
+        zonaForm.classList.remove('was-validated');
+      });
+
+      mostrarPedidos();
+      mostrarZonas();
+      mostrarProductos();
+      mostrarProductosSeleccionados();
+    });
+  </script>
+</body>
+</html>
