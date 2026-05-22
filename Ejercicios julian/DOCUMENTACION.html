@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memoria Técnica de Entrega — Ejercicios React</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-dark: #3730a3;
+            --text-color: #1f2937;
+            --text-muted: #4b5563;
+            --bg-color: #f9fafb;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --code-bg: #1e1e2e;
+            --code-text: #cdd6f4;
+            --accent-gold: #d97706;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        /* Barra de herramientas superior */
+        .toolbar {
+            max-width: 900px;
+            margin: 0 auto 30px auto;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            padding: 15px 25px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+
+        .toolbar-info h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .toolbar-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .btn-print {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+        }
+
+        .btn-print:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-print svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* Contenedor del documento A4 */
+        .document-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 60px 80px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Tipografía del documento */
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-top: 35px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 15px;
+            color: #374151;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid var(--border-color);
+            margin: 30px 0;
+        }
+
+        /* Tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        /* Listas */
+        ul, ol {
+            margin-bottom: 15px;
+            padding-left: 20px;
+            font-size: 15px;
+            color: #374151;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        /* Código */
+        code {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            background-color: #f3f4f6;
+            color: #b91c1c;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            border-radius: 10px;
+            padding: 18px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border: 1px solid #2e3047;
+        }
+
+        pre code {
+            background-color: transparent;
+            color: var(--code-text);
+            padding: 0;
+            border-radius: 0;
+            font-size: 12.5px;
+        }
+
+        /* Insignias y notas */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .badge-ready {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .highlight-card {
+            border-left: 4px solid var(--primary-color);
+            background-color: #f5f3ff;
+            padding: 15px 20px;
+            border-radius: 0 10px 10px 0;
+            margin: 20px 0;
+        }
+
+        .highlight-card p {
+            margin-bottom: 0;
+            font-size: 14px;
+            color: var(--primary-dark);
+            font-weight: 500;
+        }
+
+        /* Enlaces */
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Reglas de impresión */
+        @media print {
+            body {
+                background-color: #ffffff;
+                padding: 0;
+                color: #000000;
+            }
+
+            .toolbar {
+                display: none !important;
+            }
+
+            .document-container {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
+
+            h1, h2, h3, p, table, pre {
+                page-break-inside: avoid;
+            }
+
+            h2 {
+                margin-top: 30px;
+                page-break-before: always; /* Cada sección importante empieza en una nueva página */
+            }
+
+            pre {
+                border: 1px solid #cccccc !important;
+                background-color: #f9fafb !important;
+            }
+
+            pre code {
+                color: #000000 !important;
+            }
+
+            code {
+                background-color: #eeeeee !important;
+                color: #000000 !important;
+            }
+
+            th {
+                background-color: #dddddd !important;
+            }
+
+            a {
+                color: #000000 !important;
+                text-decoration: underline;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA DE HERRAMIENTAS -->
+    <div class="toolbar">
+        <div class="toolbar-info">
+            <h2>Memoria Técnica de Entrega</h2>
+            <p>Ejercicios React en Alternancia — Julián / Manolo Rubio</p>
+        </div>
+        <button class="btn-print" onclick="window.print()">
+            <svg viewBox="0 0 24 24">
+                <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+            </svg>
+            Guardar como PDF
+        </button>
+    </div>
+
+    <!-- DOCUMENTO A4 -->
+    <div class="document-container">
+        <h1>Memoria Técnica de Entrega — Ejercicios React</h1>
+        <p style="font-size: 16px; margin-top: 10px; color: var(--text-muted);">
+            Este documento contiene la memoria técnica oficial, la justificación de los resultados de aprendizaje (RA) y los enlaces de entrega para la práctica de React.
+        </p>
+
+        <div class="highlight-card">
+            <p>💡 <strong>Instrucciones para generar el PDF oficial:</strong> Haz clic en el botón de arriba <strong>"Guardar como PDF"</strong>. En la pantalla de impresión que se te abrirá, selecciona la opción <strong>"Guardar como PDF"</strong> (o "Save as PDF") en la sección de Impresora, y haz clic en Guardar. El archivo se generará perfectamente formateado y paginado.</p>
+        </div>
+
+        <hr>
+
+        <h2>🔗 Datos de Entrega Oficiales</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Entregable</th>
+                    <th>Enlace de Acceso</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Código Fuente (GitHub)</strong></td>
+                    <td><a href="https://github.com/manolorubio/ejercicios-react-alternancia" target="_blank">github.com/manolorubio/ejercicios-react-alternancia</a></td>
+                    <td><span class="badge badge-ready">Completado</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Despliegue Vercel</strong></td>
+                    <td><a href="https://ejercicios-react-alternancia.vercel.app" target="_blank">ejercicios-react-alternancia.vercel.app</a></td>
+                    <td><span class="badge badge-ready">Completado</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Despliegue InfinityFree</strong></td>
+                    <td><a href="http://ejercicios-react-julian.gt.tc" target="_blank">ejercicios-react-julian.gt.tc</a></td>
+                    <td><span class="badge badge-ready">Completado</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Memoria de Proyecto</strong></td>
+                    <td>Fichero <code>DOCUMENTACION.md</code> y <code>DOCUMENTACION.html</code></td>
+                    <td><span class="badge badge-ready">Completado</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>🎯 Resultados de Aprendizaje Cubiertos (RA)</h2>
+        
+        <h3>1. RA3 — Desarrollo de código en React utilizando componentes funcionales</h3>
+        <p>Se ha diseñado la aplicación entera utilizando el estándar moderno de React 18, abstrayéndose del modelo clásico de clases y utilizando componentes funcionales limpios, reactivos y fácilmente legibles.</p>
+        <ul>
+            <li><strong>Hooks Utilizados:</strong> <code>useState</code> para control reactivo de estados (edición inline, galería, filtros, tema oscuro) y <code>useEffect</code> para la persistencia local de preferencias en el cliente.</li>
+            <li><strong>Componentización Modular:</strong> Creación de módulos reutilizables altamente cohesionados e independientes (como las tarjetas individuales de posts y el conmutador de tema).</li>
+        </ul>
+
+        <h3>2. RA5 — Programación basada en eventos y control de flujos de datos</h3>
+        <p>Control de flujos del flujo de trabajo del usuario capturando eventos tanto interactivos (teclado, ratón) como de foco y ciclo de vida de componentes.</p>
+        <ul>
+            <li><strong>Eventos de Entrada:</strong> Manejo inteligente de <code>onChange</code> para re-evaluar la validez de los formularios carácter a carácter solo cuando sea estrictamente necesario.</li>
+            <li><strong>Eventos de Foco:</strong> Uso de <code>onBlur</code> para detectar la interacción del usuario con un campo concreto y no penalizar visualmente con alertas de error antes de que el usuario termine de rellenar los datos.</li>
+            <li><strong>Interceptación de Envíos:</strong> Uso de <code>preventDefault()</code> para evitar el comportamiento predeterminado del navegador, validando el contenido completo en cliente antes de procesar el envío de datos.</li>
+        </ul>
+
+        <h3>3. RA6 — Enrutamiento y Single Page Applications (SPA)</h3>
+        <p>Desarrollo estructurado utilizando el estándar de la industria <strong>React Router DOM v6</strong> para ofrecer una experiencia fluida e interactiva de aplicación de página única.</p>
+        <ul>
+            <li><strong>Routing Limpio:</strong> Enrutamiento sin recargas mediante componentes declarativos como <code>BrowserRouter</code> y <code>Routes</code>.</li>
+            <li><strong>Navegación Activa:</strong> Navegación optimizada mediante componentes <code>&lt;NavLink&gt;</code> que inyectan clases CSS específicas dinámicamente según la ruta seleccionada por el usuario de forma totalmente imperativa.</li>
+            <li><strong>Ruta de Escape 404:</strong> Implementación de una página de desvío 404 adaptada e integrada en el layout global para capturar errores de enrutamiento aleatorios.</li>
+        </ul>
+
+        <h3>4. RA7 — Despliegue, optimización y publicación de aplicaciones web</h3>
+        <p>Ejecución y puesta en producción en múltiples entornos remotos utilizando herramientas avanzadas de compilación y empaquetado.</p>
+        <ul>
+            <li><strong>Optimización con Vite:</strong> Ejecución de <code>npm run build</code> para modularizar, minificar y optimizar el peso del bundle final de CSS y JS en la carpeta <code>dist/</code>.</li>
+            <li><strong>CI/CD (Vercel):</strong> Despliegue automático e instantáneo conectado con GitHub, garantizando que cada commit a la rama principal se integre en producción de forma transparente en menos de un minuto.</li>
+            <li><strong>Hosting Tradicional (InfinityFree):</strong> Transferencia FTP clásica de los ficheros del build a la carpeta pública del servidor remoto <code>htdocs/</code>.</li>
+        </ul>
+
+        <h2>🛠️ Justificación Técnica de los Ejercicios Realizados</h2>
+
+        <h3>Ejercicio 1 — Navegación de una SPA con React Router DOM</h3>
+        <p>Se ha creado un layout con un componente barra de navegación <code>Navbar</code>. Emplea un menú de tipo hamburguesa reactivo en dispositivos móviles que conmuta su visibilidad gracias a un boolean en <code>useState</code>. La navegación se realiza de manera imperativa y con una óptima experiencia fluida sin parpadeos.</p>
+
+        <h3>Ejercicio 2 — Formulario con Validación en Tiempo Real</h3>
+        <p>El componente <code>ContactForm</code> realiza una validación exhaustiva de los tres campos de entrada de datos:</p>
+        <ul>
+            <li>Comprobación de obligatoriedad en todos los campos.</li>
+            <li>Validación sintáctica del correo electrónico mediante expresión regular (regex).</li>
+            <li>Validación de longitud de caracteres mínima para el cuadro de mensaje, forzando al usuario a redactar al menos 20 caracteres para evitar spam.</li>
+        </ul>
+        <p>El feedback visual cambia en vivo el color de borde de cada caja (verde o rojo), mostrando iconos claros indicando el estado actual de cada campo.</p>
+
+        <h3>Ejercicio 3 — Galería de Imágenes Interactiva con Animaciones</h3>
+        <p>El componente <code>Gallery</code> implementa un visor modularizado que renderiza las miniaturas a través de un mapeado de un array de objetos pasados como propiedades (props). Al pulsar en una miniatura, se actualiza el índice activo en el visor de manera limpia. Además, se ha integrado la librería **Framer Motion** para añadir un sutil fundido cruzado (*cross-fade*) en las transiciones de imagen, creando un efecto premium espectacular.</p>
+
+        <h3>Ejercicio 4 — Sistema de Publicaciones Dinámicas (Blog CRUD)</h3>
+        <p>Se ha implementado un CRUD local para gestionar publicaciones de blog directamente en el DOM mediante manipulación de estados inmutables:</p>
+        <ul>
+            <li><strong>Create (Crear):</strong> Formulario para inyectar nuevos posts al inicio del listado.</li>
+            <li><strong>Read (Leer):</strong> Visualización interactiva mediante tarjetas modularizadas <code>PostCard</code>.</li>
+            <li><strong>Update (Editar):</strong> Activación de campos input inline dentro de la propia tarjeta para editar título y cuerpo sin interrumpir el flujo.</li>
+            <li><strong>Delete (Borrar):</strong> Función de borrado con confirmación integrada.</li>
+            <li><strong>Ordenación Especial:</strong> Posibilidad de destacar publicaciones (⭐). Los artículos destacados son ordenados en primera posición de forma algorítmica y cuentan con una estética dorada premium distintiva.</li>
+        </ul>
+
+        <h3>Ejercicio 5 — Modo Oscuro / Claro Alternable</h3>
+        <p>Control centralizado a nivel de raíz (<code>App.jsx</code>) que utiliza el hook <code>useState</code> para conmutar dinámicamente un atributo <code>data-theme</code> en el nodo principal <code>&lt;html&gt;</code>. En el archivo CSS general <code>index.css</code> se mapean todas las variables de color mediante el formato HSL, facilitando una transición fluida al cambiar de tema sin parpadeos de luz en la pantalla. La preferencia del usuario es guardada en la base de datos local <code>localStorage</code>.</p>
+
+        <h2>📂 Estructura del Código Subido</h2>
+        <pre><code>src/
+├── main.jsx              # Punto de entrada de la aplicación
+├── App.jsx               # Router raíz, gestión de Modo Oscuro e inyección de layouts
+├── App.css               # Estilos globales de rejilla y layout
+├── index.css             # Definición de variables HSL de tema claro y oscuro
+│
+├── components/           # Componentes auxiliares
+│   ├── Navbar.jsx        # Barra de navegación interactiva y responsive
+│   ├── Navbar.css
+│   ├── ThemeToggle.jsx   # Botón flotante animado para el tema de luz/oscuridad
+│   ├── ThemeToggle.css
+│   ├── PostCard.jsx      # Tarjeta del Blog con estado CRUD de lectura/edición
+│   └── PostCard.css
+│
+├── pages/                # Vistas principales del enrutador
+│   ├── Inicio.jsx        # Landing con Hero premium, stack técnico e info del autor
+│   ├── Inicio.css
+│   ├── Servicios.jsx     # Contenedor de Galería e interactividad del Blog
+│   ├── Servicios.css
+│   ├── Contacto.jsx      # Contenedor del Formulario e información del centro
+│   ├── Contacto.css
+│   ├── NotFound.jsx      # Vista 404 personalizada ante rutas inexistentes
+│   └── NotFound.css
+│
+└── features/             # Componentes lógicos de cada ejercicio
+    ├── ContactForm.jsx   # Ejercicio 2 (Validación de formulario)
+    ├── ContactForm.css
+    ├── Gallery.jsx       # Ejercicio 3 (Galería de imágenes y animaciones)
+    ├── Gallery.css
+    ├── Blog.jsx          # Ejercicio 4 (CRUD completo de posts)
+    └── Blog.css</code></pre>
+
+        <hr style="margin-top: 40px;">
+        <p style="text-align: center; font-size: 13px; color: var(--text-muted);">
+            Proyecto desarrollado para la materia de Desarrollo Web en Entorno Cliente (Ejercicios en Alternancia).
+        </p>
+    </div>
+
+</body>
+</html>
